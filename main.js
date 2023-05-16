@@ -1,216 +1,102 @@
+class Hotel {
+    adress;
+    numberOfRooms;
+    #minFloor;
+    #maxFloor;
+    rooms = [];
 
-function Task(task_id) {
-  this.task_id = task_id
-  this.completed = false
-}
+    constructor(adress,numberOfRooms,minFloor,maxFloor,rooms) {
 
-Task.prototype.task_description = function(task_description) {
-  return this.task_description = task_description;
-};
+        this.adress = adress;
+        this.numberOfRooms = numberOfRooms;
+        this.#minFloor = minFloor;
+        this.#maxFloor = maxFloor;
+        this.rooms = rooms
+    }
 
-Task.prototype.due_date = function(date) {
-  let _date = date.split("-")
-  return this.date = new Date(parseInt(_date[0]),parseInt(_date[1])-1,parseInt(_date[2])+1);
-};
+    printAdvertisemen () {
+        console.log(`Wellcome To Our Hotel at ${this.adress}`)
+    }
 
-Task.prototype.priority_level = function(priority_input) {
-  let priorities_level = ['High' , 'Medium', 'Low']
-  let check = priorities_level.includes(priority_input)? priority_input : 'Invalid Priority Level Input';
-  return this.priority_level = check
-};
-
-let tasks = [];
-
-function addNewTask (task_id,task_description, date, priority_input)  {
-  let t = new Task(task_id);
-  t.task_description(task_description);
-  t.due_date(date);
-  t.priority_level(priority_input)
-  tasks.push(t)
-}
-
- function listOfAllTasks () {
-  console.log(tasks)
-}
-
-function getTask (task_id) {
-  let task = tasks.filter(task => {
-    return task.task_id === task_id
-
-  })
-  console.log(task)
-}
-
-function completeTask (task_id) {
-  tasks.map(task => {
-    task.task_id === task_id ? task.completed = true : null
-  })
-  getTask (task_id)
-}
-
-
-let comp_tasks;
-function listOfbyCompletingStatus (input) {
-  if (input === 'completed') {
-     comp_tasks = tasks.filter( task => {
-      return task.completed === true
-    })
-  }
-
-
-  if (input === 'incomplete') {
-    comp_tasks = tasks.filter(task => {
-      return task.completed === false
-    })
-  }
-  
-  console.log(comp_tasks)
-}
-
-function deleteTask (task_id) {
-  const index = tasks.findIndex(task => task.task_id === task_id);
-  
-  tasks.splice(index, 1);
+    listOfBookedRooms () {
+        let list = []
+        this.rooms.map (room => {
+            if (room.isBooked === true) {
+                list.push(room)
+            }
+        } )
+        return list
+    }
 
 }
 
-function sortByDate () {
-    console.log(tasks.sort((a,b) => {
-        return a.date - b.date
-    }))
-}
+class Room {
 
-function sortByPriority () {
-  
-  let levels = ['High', 'Medium', 'Low'];
+    floorNum;
+    rooomNum;
+    price;
+    #isBooked;
 
-    console.log(tasks.sort(function ( a, b ) {
-        let x = levels.indexOf(a.priority_level);
-        let y = levels.indexOf(b.priority_level);
+    constructor (floorNum, rooomNum, price, isBooked) {
 
-        if ( x < y ) return -1 ;
-        if ( x > y ) return 1 ;
-        return 0;
-    }))
-}
-
-function clearAllTasks () {
-  tasks = []
-}
-
-const readline = require('readline')
-
-const cmd = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-})
-
-function main() {
-  cmd.question(`Please Choose Number : \n
-0 : Add New Task,
-1 : List all of tasks,
-2: List of tasks by it completing status,
-3: Delete Task
-4: sort tasks by date
-5: sort tasks by priority,
-6: clear all tasks
-7: Make task completed
-100: Close the app
-`, (input) => {
-
-    if (input === '0') {
-      let inputs = []
-      let id = Math.floor((Math.random() * 100) + 1)
-      inputs.push(id)
-      cmd.question('please enter task description \n' , (input) => {
-        inputs.push(input)
-        cmd.question('please enter task data in form year-month-day \n' , (input) => {
-          inputs.push(input)
-          cmd.question('please choose one of the following priority level: High, Medium , Low \n' , (input) => {
-            inputs.push(input)
-            addNewTask(...inputs)
-            listOfAllTasks()
-            console.log('Your new task is added successfully! \n')
-
-            backToMainMenu ()
-          })
-        })
-      })
+        this.floorNum = floorNum;
+        this.rooomNum = rooomNum;
+        this.price = price;
+        this.#isBooked = isBooked
 
     }
 
-    else if (input === '1') {
-      listOfAllTasks()
-      backToMainMenu ()
+    printRoom () {
+        return (`Yor Room Number is ${this.rooomNum} at ${this.floorNum} Floor Which costs ${this.price} per Night and Booked status is ${this.isBooked}`)
     }
 
-    else if (input === '2') {
-      cmd.question(`please enter \n 
-    0 : To list Completed Tasks
-    1: To list Incomplete Tasks \n` ,(input) => {
-
-        if (input === '0') {
-          listOfbyCompletingStatus('completed')
-          backToMainMenu ()
-        }
-        if (input === '1') {
-          listOfbyCompletingStatus('incomplete')
-          backToMainMenu ()
-        }
-      })
+    book () {
+        this.#isBooked = true
     }
 
-    else if (input === '3') {
-      cmd.question(`please enter the task id you want to delete \nx` ,(input) => {
-        deleteTask(parseInt(input))
-        console.log(`The task with id ${input} is deleted`)
-        backToMainMenu ()
-      })
+    get isBooked () {
+        return   this.#isBooked
     }
-
-    else if (input === '4') {
-      sortByDate()
-      backToMainMenu ()
-    }
-
-    else if (input === '5') {
-      sortByPriority()
-      backToMainMenu ()
-    }
-
-    else if (input === '6') {
-      cmd.question(`please enter the task id you want to delete \n` ,() => {
-        clearAllTasks();
-        console.log('All tasks are cleared')
-        backToMainMenu ()
-      })
-    }
-
-    else if (input === '7') {
-      cmd.question(`please enter the task id you completed \n` ,(input) => {
-        completeTask(parseInt(input));
-        getTask(input)
-        backToMainMenu ()
-      })
-    }
-
-    else if (input === '100') {
-      cmd.close()
-    }
-
-  })
 
 
 }
 
-function backToMainMenu () {
-  cmd.question('Please Enter 9 to back to main menu \n', (input) => {
-    if (input === '9') {
-      main()
+class SleepingRoom extends Room {
+
+    personCapacity;
+
+    constructor (personCapacity, floorNum, rooomNum, price, isBooked) {
+
+        super(floorNum, rooomNum, price, isBooked);
+        this.personCapacity = personCapacity
     }
-  })
+
+    printRoom () {
+        return (`Yor Room Number is ${this.rooomNum} at ${this.floorNum} Floor Which costs ${this.price} per Night and Booked status is ${this.isBooked} with person Capicty is ${this.personCapacity}`)
+    }
 }
 
-main()
+class RoomWithView extends Room {
+    view;
+    numberOfBeds;
 
+    constructor (floorNum, rooomNum, price, isBooked, view, numberOfBeds) {
 
+        super (floorNum, rooomNum, price, isBooked);
+
+        this.view = view;
+        this.numberOfBeds = numberOfBeds;
+    }
+
+    printRoom () {
+        return (`Yor Room Number is ${this.rooomNum} at ${this.floorNum} Floor Which costs ${this.price} per Night and Booked status is ${this.isBooked} which has ${this.numberOfBeds} beds with ${this.view} view`)
+    }
+}
+
+let r1 = new Room(2,4,100, true)
+let sr1 = new SleepingRoom(1, 80, 1,2 , 10)
+let vr1 = new RoomWithView(1,3,100,true,'good', 2)
+
+let h1 = new Hotel('ramallah', 80, 1,2 ,[r1, sr1, vr1])
+
+console.log(r1.printRoom())
